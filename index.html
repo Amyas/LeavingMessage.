@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			* {
+				margin: 0;
+				padding: 0;
+			}
+			#box {
+				width: 600px;
+				height: 500px;
+				margin: 20px auto;
+				background: red;
+			}
+			#message {
+				width: 600px;
+				height: 400px;
+				background: blue;
+				overflow-y: auto;
+			}
+			#message .content {
+				width: 600px;
+				height: 100%;
+			}
+			#message .content p {
+				font: 300 16px/40px "microsoft yahei";
+			}
+			#send {
+				width: 600px;
+				height: 100px;
+				background: yellow;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="box">
+			<div id="message">
+				<div class="content">
+					<!--<p>刘德华:我是天王刘德华</p>-->
+				</div>
+			</div>
+			<div id="send">
+				<form>
+					<input type="text" name="sender" id="sender" value="" placeholder="用户名" />
+					<input type="text" name="sender_header" id="sender_header" value="boy1" placeholder="用户头像信息" />
+					<textarea name="msg" rows="5" cols="60"></textarea>
+					<input type="button" name="btn" id="btn" value="发送" />
+					<span id="status"></span>
+				</form>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript">
+		var maxID = 0;
+		function ajax(obj){
+			var xhr = new XMLHttpRequest;
+			xhr.onreadystatechange = function(){
+				if(xhr.readyState == 4){
+					console.log(xhr.responseText)
+					var data = JSON.parse(xhr.responseText);
+					for (var i=0;i<data.length;i++) {
+						var p = document.createElement('p');
+						p.innerHTML = data[i].sender + '说:' + data[i].msg + data[i].add_time;
+						obj.appendChild(p);
+						maxID = data[i].id;
+					}
+				}
+			}
+			xhr.open('GET','data.php?maxID=' + maxID);
+			xhr.send();
+		}
+		window.onload = function(){
+			var message = document.getElementById('message');
+			var content = message.getElementsByClassName('content')[0];
+			setInterval(function(){
+				ajax(content);
+			},2000)
+		}
+	</script>
+	<script type="text/javascript">
+		var btn = document.getElementById('btn');
+		btn.onclick = function(){
+			var fm = document.getElementsByTagName('form')[0];
+		    var fd = new FormData(fm);
+		    var xhr = new XMLHttpRequest();
+		    xhr.onreadystatechange = function(){
+		        if(xhr.readyState==4){
+		        	console.log(xhr.responseText)
+		        }
+		    }
+		    xhr.open('post','send.php');
+		    xhr.send(fd);
+		}
+	</script>
+</html>
